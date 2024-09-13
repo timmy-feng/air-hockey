@@ -11,4 +11,5 @@ setup(
     description='Package that provides the environments and frameworks for the 2023 Air Hockey Challenge.',
     packages=find_packages(),
     install_requires=[],
+    include_package_data=True
 )
