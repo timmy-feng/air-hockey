@@ -182,13 +182,14 @@ class TrainingTournamentAgentWrapper(TournamentAgentWrapper):
         return agent_2_dataset
 
     def fit(self, dataset, **kwargs):
+        flattened_dataset = self.get_dataset_1(dataset) + self.get_dataset_2(dataset)
         try:
-            self.agent_1.fit(self.get_dataset_1(dataset))
+            self.agent_1.fit(flattened_dataset)
         except NotImplementedError:
             pass
 
         try:
-            self.agent_2.fit(self.get_dataset_2(dataset))
+            self.agent_2.fit(flattened_dataset)
         except NotImplementedError:
             pass
 

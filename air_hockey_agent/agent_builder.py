@@ -1,7 +1,7 @@
 from air_hockey_challenge.framework import AgentBase
 from air_hockey_agent.raw_policy_agent import RawPolicyAgent
 
-def build_agent(env_info, **kwargs) -> AgentBase:
+def build_agent(env_info, agent=RawPolicyAgent, **kwargs) -> AgentBase:
     """
     Function where an Agent that controls the environments should be returned.
     The Agent should inherit from the mushroom_rl Agent base env.
@@ -13,4 +13,4 @@ def build_agent(env_info, **kwargs) -> AgentBase:
          (AgentBase) An instance of the Agent
     """
 
-    return RawPolicyAgent(env_info, **kwargs)
+    return agent(env_info, **kwargs)
