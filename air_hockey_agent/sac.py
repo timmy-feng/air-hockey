@@ -56,6 +56,7 @@ def get_sac_agent(
     warmup_transitions=10000,
     tau=0.001,
     lr_alpha=3e-4,
+    use_cuda=False,
     **kwargs
 ):
     actor_mu_params = dict(
@@ -63,6 +64,7 @@ def get_sac_agent(
         input_shape=mdp_info.observation_space.shape,
         output_shape=mdp_info.action_space.shape,
         layer_sizes=layer_sizes,
+        use_cuda=use_cuda,
     )
 
     actor_sigma_params = dict(
@@ -70,6 +72,7 @@ def get_sac_agent(
         input_shape=mdp_info.observation_space.shape,
         output_shape=mdp_info.action_space.shape,
         layer_sizes=layer_sizes,
+        use_cuda=use_cuda,
     )
 
     actor_optimizer = {'class': optim.Adam,
@@ -83,6 +86,7 @@ def get_sac_agent(
         input_shape=(mdp_info.observation_space.shape[0] + mdp_info.action_space.shape[0],),
         output_shape=(1,),
         layer_sizes=layer_sizes,
+        use_cuda=use_cuda,
     )
 
     return SAC(mdp_info, actor_mu_params, actor_sigma_params,

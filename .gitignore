@@ -1,5 +1,6 @@
 examples/rl/agents
 logs/
+checkpoints/
 .local/
 wandb/
 
