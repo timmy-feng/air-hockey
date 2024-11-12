@@ -70,7 +70,7 @@ if __name__ == '__main__':
         core.learn(n_steps=args.initial_replay_size, n_steps_per_fit=args.initial_replay_size)
 
     def checkpoint(name):
-        agent_1.save(f'checkpoints/{logger._log_id}/{name}.msh')
+        agent_1.save(f'checkpoints/{logger._log_id}/{name}.msh', full_save=True)
         logger.info(f'Saved model to checkpoints/{logger._log_id}/{name}.msh')
 
     for epoch in range(args.start_epoch, args.end_epoch):
