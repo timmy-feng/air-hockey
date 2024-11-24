@@ -18,4 +18,3 @@ steps_per_game: 45000 # How many steps one game will last. The n_episodes determ
 
 # Agent Parameters
 # You can specify your own parameters here, they will be passed to the init of your Agent
-load_agent: checkpoints/train_2024-11-17-16-13-59/epoch_20.msh

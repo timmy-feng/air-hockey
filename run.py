@@ -90,6 +90,8 @@ def get_args():
     arg_test.add_argument("--host", type=str, help="Host IP for tournament agent server")
     arg_test.add_argument("--port", type=int, help="Host port for tournament agent server")
 
+    arg_test.add_argument('--load_agent', type=str, help="Path to the agent to be loaded")
+
     args = vars(parser.parse_args())
     return args
 

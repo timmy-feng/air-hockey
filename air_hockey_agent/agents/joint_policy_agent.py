@@ -1,4 +1,5 @@
 from air_hockey_challenge.framework import AgentBase
+import numpy as np
 
 class JointPolicyAgent(AgentBase):
     def __init__(self, env_info, alg, is_off_policy=False, **kwargs):
@@ -17,10 +18,10 @@ class JointPolicyAgent(AgentBase):
         _dataset = []
         for state, action, reward, next_state, absorbing, last in dataset:
             _dataset.append(
-                (state, action.flatten(), reward, next_state, absorbing, last)
+                (state, action[1], reward, next_state, absorbing, last)
             )
         self.policy.fit(
-            [(sample[0], sample[1].flatten()) + sample[2:] for sample in dataset],
+            _dataset,
             **kwargs
         )
 
@@ -29,6 +30,6 @@ class JointPolicyAgent(AgentBase):
 
     def draw_action(self, observation):
         q = observation[self.env_info["joint_pos_ids"]]
-        action = self.policy.draw_action(observation)
-        action[:7] = q + action[7:] * self.env_info["rl_info"].dt
-        return action.reshape(2, -1)
+        dq_desired = self.policy.draw_action(observation)
+        q_desired = q + dq_desired * self.env_info["rl_info"].dt
+        return np.vstack([q_desired, dq_desired])

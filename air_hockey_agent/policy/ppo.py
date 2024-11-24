@@ -76,5 +76,6 @@ def get_ppo_agent(
         batch_size=batch_size,
         eps_ppo=eps_ppo,
         lam=lam,
+        ent_coeff=1e-3,
         critic_fit_params=None,
     )

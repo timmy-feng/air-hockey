@@ -1,5 +1,5 @@
+from air_hockey_challenge.utils.kinematics import forward_kinematics
 import numpy as np
-
 
 class Reward:
     def reward(self, base_env, state, action, next_state, absorbing):
@@ -9,7 +9,6 @@ class Reward:
 
     def __call__(self, base_env, state, action, next_state, absorbing):
         return self.reward(base_env, state, action, next_state, absorbing)
-
 
 class RewardList(Reward):
     def __init__(self, rewards, weights):
@@ -23,36 +22,37 @@ class RewardList(Reward):
             for reward, weight in zip(self.rewards, self.weights)
         )
 
+class PuckDistanceReward(Reward):
+    def __init__(self, lam=1):
+        self.lam = lam
 
-class ScoreReward(Reward):
     def reward(self, base_env, state, action, next_state, absorbing):
         puck_pos, _ = base_env.get_puck(next_state)
-        score_reward = 0
-        if absorbing:
-            # Puck in Goal
-            if (
-                np.abs(puck_pos[1]) - base_env.env_info["table"]["goal_width"] / 2
-            ) <= 0:
-                # Score for home
-                if puck_pos[0] > base_env.env_info["table"]["length"] / 2:
-                    score_reward += 1
-                # Score for opponent
-                elif puck_pos[0] < -base_env.env_info["table"]["length"] / 2:
-                    score_reward -= 1
-        return np.array([score_reward, -score_reward])
+        ee_pos, _ = base_env.get_ee()
+        return np.exp(-self.lam * np.linalg.norm(puck_pos - ee_pos) ** 2)
 
+class EffortReward(Reward):
+    def reward(self, base_env, state, action, next_state, absorbing):
+        _, dq0 = base_env.get_joints(state)
+        _, dq1 = base_env.get_joints(next_state)
+        return -np.linalg.norm((dq1 - dq0) / base_env.dt)
 
-class ConstraintReward(Reward):
-    def __init__(self, name):
-        self.name = name
+class PlaneAvoidanceReward(Reward):
+    def __init__(self, plane, offset, link='ee', d_max=0.01):
+        self.link = link
+        self.plane = plane
+        self.offset = offset
+        self.d_max = d_max
 
     def reward(self, base_env, state, action, next_state, absorbing):
-        loss = []
-        for agent in [1, 2]:
-            q, dq = base_env.get_joints(next_state, agent=agent)
-            loss.append(
-                np.maximum(
-                    0, base_env.env_info["constraints"].get(self.name).fun(q, dq)
-                ).sum()
-            )
-        return -np.array(loss)
+        q, _ = base_env.get_joints(next_state)
+        link_pos, _ = forward_kinematics(
+            base_env.env_info['robot']['robot_model'],
+            base_env.env_info['robot']['robot_data'],
+            q,
+            link=self.link
+        )
+
+        d = (np.dot(self.plane, link_pos) - self.offset) / np.linalg.norm(self.plane)
+
+        return -max(0, 1 - d / self.d_max)
