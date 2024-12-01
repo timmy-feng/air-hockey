@@ -149,6 +149,7 @@ if __name__ == "__main__":
             policy=args.alg,
             load_agent=f"checkpoints/{args.continue_from}/epoch_{args.start_epoch}.msh",
         )
+        agent.is_off_policy = args.alg == "sac"
     else:
         agent = build_agent(
             mdp.env_info,
@@ -172,7 +173,7 @@ if __name__ == "__main__":
         logger = Logger(
             args.continue_from,
             results_dir="./logs",
-            use_timestamp=True,
+            use_timestamp=False,
             log_console=True,
             append=True,
         )
@@ -212,8 +213,9 @@ if __name__ == "__main__":
         R = np.mean(compute_J(dataset))
 
         smoothed_J = alpha_J * J + (1 - alpha_J) * smoothed_J if epoch > args.start_epoch else J
-        if smoothed_J >= 100:
+        if smoothed_J >= 64:
             mdp.grow_start_range(0.25)
+            smoothed_J = 0
             logger.info(f"Increased size of start region")
 
         if args.alg == "sac":

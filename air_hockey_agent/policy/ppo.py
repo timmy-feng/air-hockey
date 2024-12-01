@@ -55,11 +55,11 @@ def get_ppo_agent(
         use_cuda=use_cuda,
     )
 
-    actor_optimizer = {"class": optim.AdamW, "params": {"lr": 3e-5}}
+    actor_optimizer = {"class": optim.AdamW, "params": {"lr": 3e-4}}
 
     critic_params = dict(
         network=Network,
-        optimizer={"class": optim.AdamW, "params": {"lr": 3e-5}},
+        optimizer={"class": optim.AdamW, "params": {"lr": 3e-4}},
         loss=F.mse_loss,
         input_shape=mdp_info.observation_space.shape,
         output_shape=(1,),

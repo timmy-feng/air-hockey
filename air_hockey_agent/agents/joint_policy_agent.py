@@ -9,6 +9,7 @@ class JointPolicyAgent(AgentBase):
         self.is_off_policy = is_off_policy
         self._add_save_attr(
             policy="mushroom",
+            is_off_policy="primitive",
         )
 
     def fit(self, dataset, alt_dataset=[], **kwargs):
