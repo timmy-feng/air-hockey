@@ -12,8 +12,9 @@ class AirHockeyJointControl(AirHockeySingle):
         The agent should move the end-effector to the goal position.
     """
     def __init__(self, gamma=0.99, horizon=500, viewer_params={}, lam_err=20, lam_eff=0.005, **kwargs):
-        self.start_range = np.array([[-0.8, -0.6], [-0.1, 0.1]])
-        self.table_range = np.array([[-0.9, -0.3], [-0.4, 0.4]])
+        # start with learning farther reaches
+        self.start_range = np.array([[-0.2, -0.1], [-0.1, 0.1]])
+        self.table_range = np.array([[-0.9, -0.1], [-0.4, 0.4]])
 
         self.lam_err = lam_err
         self.lam_eff = lam_eff
@@ -50,8 +51,18 @@ class AirHockeyJointControl(AirHockeySingle):
         # add a dummy observation for the ghost opponent
         return np.concatenate([obs, np.random.rand(3) * 3 + np.array([1.5, -1.5, -1.5])])
 
+    def sample_starting_pos(self):
+        # while True:
+        #     puck_offset = np.random.rand(2) * (self.start_range[:, 1] - self.start_range[:, 0])
+        #     edge_score = (self.start_range[0, 1] - self.start_range[0, 0] - puck_offset[0] + \
+        #                   min(puck_offset[1], self.start_range[1, 1] - self.start_range[1, 0] - puck_offset[1])) / \
+        #                     (self.start_range[0, 1] - self.start_range[0, 0] + (self.start_range[1, 1] - self.start_range[1, 0]) / 2)
+        #     if np.random.rand() >= edge_score:
+        #         return puck_offset + self.start_range[:, 0]
+        return np.random.rand(2) * (self.start_range[:, 1] - self.start_range[:, 0]) + self.start_range[:, 0]
+
     def setup(self, obs):
-        puck_pos = np.random.rand(2) * (self.start_range[:, 1] - self.start_range[:, 0]) + self.start_range[:, 0]
+        puck_pos = self.sample_starting_pos()
         puck_vel = np.zeros(3)
 
         self._write_data("puck_x_pos", puck_pos[0])

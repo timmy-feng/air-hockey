@@ -18,12 +18,12 @@ class ActorNetwork(nn.Module):
         self.output_shape = output_shape
 
         self.layers = nn.ModuleList(
-            [nn.Linear(input_shape[0], layer_sizes[0]).double()]
+            [nn.Linear(input_shape[0], layer_sizes[0])]
             + [
-                nn.Linear(layer_sizes[i], layer_sizes[i + 1]).double()
+                nn.Linear(layer_sizes[i], layer_sizes[i + 1])
                 for i in range(len(layer_sizes) - 1)
             ]
-            + [nn.Linear(layer_sizes[-1], output_shape[0]).double()]
+            + [nn.Linear(layer_sizes[-1], output_shape[0])]
         )
 
         if set_last_layer is not None:
@@ -47,12 +47,12 @@ class CriticNetwork(nn.Module):
         self.output_shape = output_shape
 
         self.layers = nn.ModuleList(
-            [nn.Linear(input_shape[0], layer_sizes[0]).double()]
+            [nn.Linear(input_shape[0], layer_sizes[0])]
             + [
-                nn.Linear(layer_sizes[i], layer_sizes[i + 1]).double()
+                nn.Linear(layer_sizes[i], layer_sizes[i + 1])
                 for i in range(len(layer_sizes) - 1)
             ]
-            + [nn.Linear(layer_sizes[-1], output_shape[0]).double()]
+            + [nn.Linear(layer_sizes[-1], output_shape[0])]
         )
 
     def forward(self, state, action):
@@ -65,10 +65,10 @@ class CriticNetwork(nn.Module):
 def get_sac_agent(
     mdp_info,
     layer_sizes=(256, 256, 256),
-    initial_replay_size=5000,
-    max_replay_size=200000,
+    initial_replay_size=4096,
+    max_replay_size=262144,
     batch_size=64,
-    warmup_transitions=10000,
+    warmup_transitions=8192,
     tau=0.001,
     lr_alpha=3e-5,
     use_cuda=False,
